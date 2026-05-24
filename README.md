@@ -4,19 +4,17 @@
 [![Scala Version](https://img.shields.io/badge/Scala-2.12-blue)](https://www.scala-lang.org/)
 [![Hadoop Version](https://img.shields.io/badge/Hadoop-3.1.1-yellow)](https://hadoop.apache.org/)
 [![MySQL Version](https://img.shields.io/badge/MySQL-5.7-green)](https://mysql.com/)
-[![License](https://img.shields.io/badge/License-MIT-red)](LICENSE)
 
-基于 **Apache Spark 2.4.5 + Scala 2.12** 构建的企业级网站日志分析平台，支持海量日志数据的离线分析与可视化展示。
+基于 **Apache Spark 2.4.5 + Scala 2.12** 构建的企业级网站日志分析平台，支持海量日志数据的离线分析。
 
 ## ✨ 核心功能
 
 | 功能模块 | 说明 |
 |---------|------|
-| 📊 PV/UV 统计 | 页面浏览量、独立访客数实时统计 |
+| 📊 PV/UV 统计 | 页面浏览量、独立访客数统计 |
 | 🔥 热门页面 | TOP 10 页面访问排行 |
 | ⏰ 时段分布 | 24小时访问趋势分析 |
 | 📋 状态码分析 | HTTP状态码分布统计 |
-| 📈 可视化大屏 | ECharts动态图表展示 |
 
 ## 🏗️ 系统架构
 ┌─────────────────────────────────────────────────────────────┐
@@ -33,11 +31,6 @@
 ┌─────────────────────────────────────────────────────────────┐
 │ 数据存储层 │
 │ HDFS(原始日志) + MySQL(统计结果) │
-└─────────────────────────────────────────────────────────────┘
-↓
-┌─────────────────────────────────────────────────────────────┐
-│ 可视化层 │
-│ ECharts 可视化大屏 │
 └─────────────────────────────────────────────────────────────┘
 
 text
@@ -76,23 +69,36 @@ text
 ### 1. 克隆项目
 
 ```bash
-git clone https://github.com/yourname/bigdata-log-analyzer.git
+git clone https://github.com/Kauffeldz/bigdata-log-analyzer.git
 cd bigdata-log-analyzer
-mysql -h fgedu81 -uroot -proot < scripts/mysql_schema.sql
-python scripts/generate_log.py
+2. 初始化数据库
+bash
+mysql -h fgedu81 -uroot -proot -e "CREATE DATABASE IF NOT EXISTS log_analyzer"
+3. 生成测试数据
+bash
+python3 scripts/generate_log.py
+4. 编译打包
+bash
 mvn clean package -DskipTests
+5. 提交Spark作业
+bash
 spark-submit \
   --class com.bigdata.log.LogAnalyzer \
   --master yarn \
   --deploy-mode cluster \
   --num-executors 3 \
   --executor-memory 1024m \
+  --executor-cores 2 \
   target/log-analyzer-1.0.0-jar-with-dependencies.jar \
   "hdfs://fgeduns/data/raw_logs/access.log" \
   "jdbc:mysql://fgedu81:3306/log_analyzer" \
   "root" \
   "root"
+6. 一键运行
+bash
 ./run.sh
+📊 输出示例
+text
 ==========================================
 网站日志分析平台 - 作业启动
 ==========================================
@@ -107,13 +113,25 @@ spark-submit \
    1. /index.html                                    12,345
    2. /course.html                                    8,234
    3. /detail.html                                    6,123
+   4. /about.html                                     4,567
+   5. /contact.html                                   3,456
    ...
 
 ⏰ 访问时段分布:
    08:00 ████████████████████████████████████         3,456
    09:00 ████████████████████████████████████████     4,567
    10:00 ██████████████████████████████████████████   5,678
+   11:00 ████████████████████████████████████████     4,890
+   14:00 ████████████████████████████████████████     4,234
    ...
+
+📋 HTTP状态码分布:
+   200 : 45,234
+   304 :  2,500
+   404 :    500
+   500 :    298
+📁 项目结构
+text
 bigdata-log-analyzer/
 ├── src/
 │   └── main/scala/com/bigdata/log/
@@ -126,7 +144,7 @@ bigdata-log-analyzer/
 ├── pom.xml                        # Maven配置
 ├── run.sh                         # 一键运行脚本
 └── README.md                      # 项目文档
-性能指标
+📈 性能指标
 数据量处理时间集群配置
 5万条~15秒3节点
 50万条~2分钟3节点
@@ -143,11 +161,11 @@ Fork 本仓库
 打开 Pull Request
 
 📄 License
-本项目采用 MIT 许可证 - 详见 LICENSE 文件
+MIT License
 
 📧 联系方式
 作者：Kauffeldz
 
 邮箱：chenyuyang@nefu.edu.cn
 
-项目链接：https://github.com/yourname/bigdata-log-analyzer
+项目链接：https://github.com/Kauffeldz/bigdata-log-analyzer
