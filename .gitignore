@@ -1,0 +1,54 @@
+# Compiled files
+*.class
+*.jar
+*.war
+*.ear
+target/
+out/
+
+# IDE files
+.idea/
+*.iml
+.settings/
+.project
+.classpath
+.vscode/
+.DS_Store
+
+# Log files
+*.log
+logs/
+/data/logs/
+
+# Data files
+data/*.log
+data/*.csv
+
+# Config files with sensitive data
+application.local.conf
+*.secret
+
+# Python
+__pycache__/
+*.py[cod]
+venv/
+.env
+dashboard/__pycache__/
+
+# OS files
+Thumbs.db
+Desktop.ini
+
+# Spark temp files
+spark-warehouse/
+metastore_db/
+derby.log
+
+# Cluster temp
+*.pid
+*.tmp
+nohup.out
+
+# My private files
+*.md.backup
+*.sh.backup
